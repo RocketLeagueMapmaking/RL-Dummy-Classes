@@ -23,6 +23,8 @@ enum SearchStatusOwner
     StatusOwner_None,
     StatusOwner_Matchmaking,
     StatusOwner_PrivateMatch,
+    StatusOwner_Lan,
+    StatusOwner_Tournaments,
     StatusOwner_MAX
 };
 
@@ -37,6 +39,9 @@ enum EPaintTeam
 enum EVoiceFilter
 {
     VoiceFilter_All,
+    VoiceFilter_Preset,
+    VoiceFilter_TeamPreset,
+    VoiceFilter_TacticalPreset,
     VoiceFilter_Team,
     VoiceFilter_Friends,
     VoiceFilter_None,
@@ -46,10 +51,9 @@ enum EVoiceFilter
 enum EUnlockMethod
 {
     UnlockMethod_Default,
-    UnlockMethod_Drop,
-    UnlockMethod_Special,
-    UnlockMethod_Reward,
+    UnlockMethod_Online,
     UnlockMethod_DLC,
+    UnlockMethod_Never,
     UnlockMethod_MAX
 };
 
@@ -66,16 +70,6 @@ enum EDemolishSpeed
     DemolishSpeed_Supersonic,
     DemolishSpeed_None,
     DemolishSpeed_MAX
-};
-
-enum ECarMod
-{
-    CarMod_DriveMaxSpeedAdd,
-    CarMod_DriveEngineTorqueScale,
-    CarMod_DriveBrakeTorqueScale,
-    CarMod_BoostForceScale,
-    CarMod_BoostMaxAmountScale,
-    CarMod_MAX
 };
 
 enum ETutorialType
@@ -127,6 +121,8 @@ enum EProductAttachmentSocket
     PAS_Hat,
     PAS_Front,
     PAS_Antenna,
+    PAS_UnderGlow,
+    PAS_Root,
     PAS_MAX
 };
 
@@ -136,6 +132,7 @@ enum EMirrorFieldType
     MFT_X,
     MFT_Y,
     MFT_XY,
+    MFT_TeamIndex,
     MFT_MAX
 };
 
@@ -410,6 +407,11 @@ enum EMainMenuBackground
     MMBG_ParkDay,
     MMBG_Music,
     MMBG_ThrowbackHockey,
+    MMBG_Circuit,
+    MMBG_Outlaw,
+    MMBG_Arc,
+    MMBG_ParkSnowy,
+    MMBG_TokyoToon,
     MMBG_MAX
 };
 
@@ -437,7 +439,7 @@ struct UISavedKeyValue
 
 struct DemolishData
 {
-    var Car_TA Attacker;
+    var RBActor_TA Attacker;
     var Car_TA Victim;
     var Vector AttackerVelocity;
     var Vector VictimVelocity;
@@ -465,7 +467,18 @@ struct ProfileCameraSettings
     var float Distance;
     var float Stiffness;
     var float SwivelSpeed;
+    var float TransitionSpeed;
 
+    structdefaultproperties
+    {
+        FOV=90.0
+        Height=100.0
+        Pitch=-3.0
+        Distance=270.0
+        Stiffness=0.50
+        SwivelSpeed=2.50
+        TransitionSpeed=1.0
+    }
 };
 
 struct native ReplayHeaderLoadResult
@@ -664,27 +677,26 @@ struct TutorialScoreInfo
 
 };
 
-struct native CarModSet
-{
-    var() float ModValues[ECarMod];
-
-};
-
-struct native CarModPair
-{
-    var _Types_TA.ECarMod Mod;
-    var float Value;
-};
-
-struct native LoadoutTeamPaint
+struct native LoadoutTeamColor
 {
     var byte Team;
     var byte TeamColorID;
-    var int TeamFinishID;
     var byte CustomColorID;
-    var int CustomFinishID;
     var bool bSet;
 
+    structdefaultproperties
+    {
+        Team=0
+        TeamColorID=0
+        CustomColorID=0
+        bSet=false
+    }
+};
+
+struct native LoadoutTeamPaint extends LoadoutTeamColor
+{
+    var int TeamFinishID;
+    var int CustomFinishID;
 };
 
 struct native ClientLoadoutData
@@ -695,7 +707,10 @@ struct native ClientLoadoutData
 
 struct native LoadoutData extends ClientLoadoutData
 {
-    var LoadoutTeamPaint TeamPaints[2];
+    var LoadoutTeamPaint TeamPaint;
+    var name Title;
+    var int TeamIndex;
+    var array<ProductInstanceID> OnlineProducts;
 };
 
 struct native VehicleInputs
@@ -705,11 +720,33 @@ struct native VehicleInputs
     var() float Pitch;
     var() float Yaw;
     var() float Roll;
-    var() bool bJump;
-    var() bool bBoost;
+    var() float DodgeForward;
+    var() float DodgeRight;
     var() bool bHandbrake;
+    var() bool bJump;
+    var() bool bActivateBoost;
+    var() bool bHoldingBoost;
+    var bool bJumped;
+    var bool bGrab;
+    var bool bButtonMash;
 
-   
+    structdefaultproperties
+    {
+        Throttle=0.0
+        Steer=0.0
+        Pitch=0.0
+        Yaw=0.0
+        Roll=0.0
+        DodgeForward=0.0
+        DodgeRight=0.0
+        bHandbrake=false
+        bJump=false
+        bActivateBoost=false
+        bHoldingBoost=false
+        bJumped=false
+        bGrab=false
+        bButtonMash=false
+    }
 };
 
 struct native MessageValue
@@ -735,15 +772,18 @@ struct native BallHitInfo
     var PRI_TA AttackerPRI;
     var name CarName;
     var int TeamNum;
-    var  ReplicatedRBState PreHitCarPhysics;
-    var  ReplicatedRBState PreHitBallPhysics;
-    var  ReplicatedRBState PostHitBallPhysics;
+    var ReplicatedRBState PreHitCarPhysics;
+    var ReplicatedRBState PreHitBallPhysics;
+    var ReplicatedRBState PostHitBallPhysics;
     var float Distance;
     var float Time;
     var Vector HitLocation;
     var Vector HitNormal;
     var bool bDodging;
     var bool bWheelsTouching;
+    var bool bWorldTouching;
+    var EBallHitType HitType;
+    var int HitID;
 	
 	structdefaultproperties
     {
@@ -760,6 +800,9 @@ struct native BallHitInfo
         HitNormal=(X=0.0,Y=0.0,Z=0.0)
         bDodging=false
         bWheelsTouching=false
+        bWorldTouching=false
+        HitType=HitType_Item0
+        HitID=0
     }
 
     
@@ -803,14 +846,34 @@ struct native ProductAttachment
 {
     var() StaticMesh StaticMesh;
     var() SkeletalMesh SkeletalMesh;
+    var() ParticleSystem ParticleSystem;
     var() MaterialInterface Material;
     var() float Scale;
     var() Vector Translation;
-    var() _Types_TA.EProductAttachmentSocket Socket;
+    var() Rotator Rotation;
+    var() EProductAttachmentSocket Socket;
     var() export editinline AntennaComponent_TA Antenna;
     var() editinline array<editinline AttachmentBehavior_TA> Behaviors;
+    // var() editinline ProductAttribute_InheritCarSetting_TA InheritCarAttribute;
+    var() export editinline PrimitiveComponent Component;
+    var() FXActor_X FXActor;
 
-  
+    structdefaultproperties
+    {
+        StaticMesh=none
+        SkeletalMesh=none
+        ParticleSystem=none
+        Material=none
+        Scale=1.0
+        Translation=(X=0.0,Y=0.0,Z=0.0)
+        Rotation=(Pitch=0,Yaw=0,Roll=0)
+        Socket=EProductAttachmentSocket.PAS_Hat
+        Antenna=none
+        Behaviors.Empty
+        // InheritCarAttribute=none
+        Component=none
+        FXActor=none
+    }
 };
 
 struct native WheelContactData
@@ -834,12 +897,27 @@ struct native SimpleSpringSettings
     var() Vector Strength;
     var() Vector Damping;
     var() Vector MaxDisplacement;
+    var() bool bUseMinDisplacement;
+    var() Vector MinDisplacement;
     var() float Mass;
     var() Vector MassOffset;
     var() float MaxSpeed;
     var(Debug) bool bDebug;
     var(Debug) float DrawDebugOffset;
 
+    structdefaultproperties
+    {
+        Strength=(X=100.0,Y=100.0,Z=100.0)
+        Damping=(X=5.0,Y=5.0,Z=5.0)
+        MaxDisplacement=(X=50.0,Y=50.0,Z=50.0)
+        bUseMinDisplacement=false
+        MinDisplacement=(X=0.0,Y=0.0,Z=0.0)
+        Mass=1.0
+        MassOffset=(X=0.0,Y=0.0,Z=0.0)
+        MaxSpeed=3000.0
+        bDebug=false
+        DrawDebugOffset=0.0
+    }
 };
 
 struct UIProductSlotData
@@ -848,15 +926,6 @@ struct UIProductSlotData
     var() Texture2D Texture;
     var() AkSoundCue Sound;
 
-};
-
-struct UICarModData
-{
-    var() _Types_TA.ECarMod Mod;
-    var() string Name;
-    var() float MaxValue;
-
-  
 };
 
 struct SimilarLogoGroup

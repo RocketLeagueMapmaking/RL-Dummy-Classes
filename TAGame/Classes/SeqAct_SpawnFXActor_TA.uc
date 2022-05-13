@@ -8,11 +8,16 @@ class SeqAct_SpawnFXActor_TA extends SequenceAction
     hidecategories(Object);
 
 var() private FXActor_X FXActor;
+var() editinline ProductAssetReference_TA Product;
 var private Actor Transform;
 var() private Vector Location;
 var() private Rotator Rotation;
 var private Actor ActorToSpawnOn;
 var private FXActor_X SpawnedFXActor;
+var() ProductPaint_TA Paint;
+var() name PaintParameterNames;
+var transient bool bTickable;
+var transient MaterialInstanceConstant BallLocMic;
 
 defaultproperties
 {

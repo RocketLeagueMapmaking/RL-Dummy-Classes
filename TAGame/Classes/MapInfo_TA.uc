@@ -25,6 +25,8 @@ struct WorldColorData
 var() private WorldColorData WorldColors;
 var() private _Types_TA.EMirrorFieldType MirrorFieldType;
 var() private int MirrorFieldXYRotation;
+var() bool bCanMirrorTraining;
+var() bool bMirrorTrainingSwapsGoals;
 var() private Vector FieldCenter;
 var() private float MinStadiumBrightness;
 var(AutoCam) private Rotator MapResetStartRotation;
@@ -57,4 +59,5 @@ defaultproperties
     CountDownFOV=120.0
     BackAwayFromWallDistance=800.0
     bPlayGlobalCrowdSounds=true
+    bCanMirrorTraining=true
 }

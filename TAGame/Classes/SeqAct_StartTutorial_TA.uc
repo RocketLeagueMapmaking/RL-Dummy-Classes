@@ -22,6 +22,12 @@ defaultproperties
     OutputLinks(2)=(LinkDesc="Failed")
     OutputLinks(3)=(LinkDesc="Screen Faded In")
     OutputLinks(4)=(LinkDesc="Screen Faded Out")
+    OutputLinks(5)=(LinkDesc="All Messages Displayed")
+    OutputLinks(6)=(LinkDesc="Started")
+    OutputLinks(7)=(LinkDesc="Reset")
+    OutputLinks(8)=(LinkDesc="Skipped")
+    OutputLinks(9)=(LinkDesc="Answer Right")
+    OutputLinks(10)=(LinkDesc="Answer Wrong")
     VariableLinks(0)=(ExpectedType=Class'Engine.SeqVar_Object',LinkDesc="Instigator",PropertyName=Instigator,bWriteable=false)
     ObjName="Start Tutorial"
 }

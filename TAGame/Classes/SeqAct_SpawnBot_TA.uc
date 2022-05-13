@@ -10,11 +10,17 @@ class SeqAct_SpawnBot_TA extends SequenceAction;
 var Car_TA SpawnedBot;
 var Actor SpawnTransform;
 var() float SkillLevel;
+var() bool bDisableAllLogic;
+var() bool bCollideWithBall;
+var() bool bCollideWithVehicle;
+var() int TeamIndex;
 
 defaultproperties
 {
     ObjCategory="TAGame"
-	
+ 
+    bCollideWithBall=true
+    bCollideWithVehicle=true	
 	bCallHandler=false
     bAutoActivateOutputLinks=false
     InputLinks(0)=(LinkDesc="Spawn",bHasImpulse=false,QueuedActivations=0,bDisabled=false,bDisabledPIE=false,LinkedOp=none,DrawY=0,bHidden=false,ActivateDelay=0.0,bMoving=false,bClampedMax=false,bClampedMin=false,OverrideDelta=0)

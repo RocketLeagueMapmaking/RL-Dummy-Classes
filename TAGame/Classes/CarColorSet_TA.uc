@@ -8,6 +8,18 @@
 class CarColorSet_TA extends Object
     native;
 
+struct native DebugColor
+{
+    var() editconst LinearColor Color;
+    var() bool bPreview;
+
+    structdefaultproperties
+    {
+        Color=(R=0.0,G=0.0,B=0.0,A=1.0)
+        bPreview=false
+    }
+};
+
 /** Grayscale values to include */
 var() editoronly array<editoronly LinearColor> Grayscales;
 /** Hues */
@@ -15,10 +27,14 @@ var() editoronly array<editoronly LinearColor> H;
 /** Brightness + Saturation pairs */
 var() editoronly array<editoronly LinearColor> SV;
 /** Default Color ID (index into Colors table) */
-var() int DefaultId;
+// var() int DefaultId;
 /** How many hues we have (+1 for grayscale) */
-var() const editconst int HueCount;
+// var() const editconst int HueCount;
 /** How many values we have of each hue */
-var() const editconst int ValueCount;
+// var() const editconst int ValueCount;
 /** Generated list of colors */
-var() const editconst array<editconst LinearColor> Colors;
+// var() const editconst array<editconst LinearColor> Colors;
+
+var() LinearColor ColorBlindColor;
+var() editoronly const array<editoronly DebugColor> DebugColors;
+var() float MinStadiumBrightness;

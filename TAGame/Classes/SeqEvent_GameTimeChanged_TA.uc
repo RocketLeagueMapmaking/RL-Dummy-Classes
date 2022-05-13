@@ -8,7 +8,7 @@
 class SeqEvent_GameTimeChanged_TA extends SequenceEvent;
 
 var bool bHasBeenCalled;
-var float CallTimePercent;
+var() float CallTimePercent;
 
 defaultproperties
 {

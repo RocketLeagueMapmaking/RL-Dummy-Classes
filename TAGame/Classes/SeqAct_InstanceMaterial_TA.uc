@@ -7,10 +7,10 @@
  *******************************************************************************/
 class SeqAct_InstanceMaterial_TA extends SequenceAction;
 
-var() Material MaterialInstance;
-var byte SK;
-var byte SM;
-var Material InstancedMaterial;
+var() MaterialInstanceConstant MaterialInstance;
+var SkeletalMeshActor SK;
+var StaticMeshActor SM;
+var MaterialInstanceConstant InstancedMaterial;
 var int MatIndex;
 
 
